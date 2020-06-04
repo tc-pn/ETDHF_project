@@ -18,7 +18,7 @@
 ccccccccccccccccccccccccccccccccccccccccccccccccc
 c     NAG VARIABLES
 ccccccccccccccccccccccccccccccccccccccccccccccccc
-      REAL*8   TOL,Z(Nmax,Nmax),EPS
+      REAL*8   TOL,EPS
       REAL*8   D(Nmax),E(Nmax)
       REAL*8   V(Nmax,Nmax) 
       REAL*8   X02AJF
@@ -33,7 +33,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c   NB OF ITERATION WITH TIME EVOLUTION
 c
-      I_TEMPSMAX = 2000
+c      I_TEMPSMAX = 1000
+      I_TEMPSMAX = 100000
 
       EPS   =  X02AJF()
       IFAIL = 1
@@ -46,14 +47,12 @@ c
       A=40
       R02 =  0.
       FREQ = 41.D0*DFLOAT(A)**(-1.D0/3.D0)
-c      K=1.01*DFLOAT(A)**(1.D0/6.D0)
 
-       K = MASS*FREQ**2.D0/HB2
+      K = MASS*FREQ**2.D0/HB2
 
       I_centre = Noeud/2
 
-      t0 = -20.D0
-c      t0 = 0
+      t0 = -20.0
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c   This gives a realistic NN cross section around 40 mb
@@ -102,7 +101,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
          ENDDO
       ENDDO
       CLOSE(20)
-      print *,'Y=',Y*pas
+c     print *,'Y=',Y*pas
 
 
        call F01AJF(Nmax,TOL,DENS,Nmax,D,E,V,Nmax)
@@ -111,7 +110,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        Norbital = 0
        DO I=1,Nmax
           D(I) = D(I)*pas
-          IF(D(I) .GT. 0.00001) Norbital = Norbital+1
+          IF(D(I) .GT. 0.001) Norbital = Norbital+1
        ENDDO
 
        print *,'Norbital=',Norbital
@@ -127,7 +126,11 @@ ccccccccccccccccccccccccccccccccccccccccc
              Y = Y +NI(I)
              print *,'NI(',I,')=',NI(I)
           ENDDO
-          print *,'Y=',Y
+c          print *,'Y=',Y
+          DO I = 1,Norbital
+             NI(I) = NI(I)/Y
+          ENDDO
+
 ccccccccccccccccccccccccccccccccccccccccc
 c     SINGLE PARTICLE WAVE-PACKETS
 ccccccccccccccccccccccccccccccccccccccccc
